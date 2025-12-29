@@ -10,6 +10,19 @@ export class AppService {
   public async generateURL(
     body: GenerateURLDto
   ) {
+    const existUrl = await prisma.urls.findFirst({
+      where: { original_url: body.original_url },
+      select: {
+        short_url: true
+      }
+    });
+
+    if (existUrl) {
+      return {
+        short_url: existUrl.short_url
+      }
+    }
+
     const short_url = nanoid();
 
     await prisma.urls.create({
